@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moon Orientation From Earth</title>
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+    <div id="app">
+      <header class="topbar">
+        <div>
+          <h1>Moon From Earth</h1>
+          <p id="caption">Northern horizon view, waxing crescent.</p>
+        </div>
+      </header>
+
+      <div class="view-label left">Outside view</div>
+      <div class="view-label right">Ground view</div>
+
+      <section class="panel controls" aria-label="Visualization controls">
+        <label>
+          <span>Location</span>
+          <select id="latitude">
+            <option value="50">Northern hemisphere</option>
+            <option value="0">Equator</option>
+            <option value="-50">Southern hemisphere</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Earth rotation</span>
+          <input id="moonTime" type="range" min="0" max="24" step="0.1" value="20" />
+        </label>
+
+        <label>
+          <span>Phase</span>
+          <input id="phase" type="range" min="0" max="1" step="0.001" value="0.18" />
+        </label>
+
+      </section>
+
+      <section class="readout" aria-label="Current moon data">
+        <div><span>Latitude</span><strong id="latReadout">50° N</strong></div>
+        <div><span>Phase</span><strong id="phaseReadout">Waxing crescent</strong></div>
+        <div><span>Moon altitude</span><strong id="altReadout">0°</strong></div>
+        <div><span>Orientation</span><strong id="orientReadout">0°</strong></div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
