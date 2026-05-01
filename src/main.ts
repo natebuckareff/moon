@@ -179,15 +179,13 @@ sunlight.position.set(-8, 2, 3);
 scene.add(sunlight);
 scene.add(new THREE.AmbientLight(0x506070, 0.8));
 
-function drawMoonTexture(phase: number, orientationRadians: number) {
+function drawMoonTexture(lightVector: THREE.Vector3, orientationRadians: number) {
   const ctx = moonCanvas.getContext("2d")!;
   const size = moonCanvas.width;
   const center = size / 2;
   const radius = size * 0.43;
   const image = ctx.createImageData(size, size);
   const data = image.data;
-  const sunAngle = phase * Math.PI * 2;
-  const lightVector = new THREE.Vector3(-Math.cos(sunAngle), 0, Math.sin(sunAngle)).normalize();
   const rotate = -orientationRadians;
   const cr = Math.cos(rotate);
   const sr = Math.sin(rotate);
@@ -252,6 +250,17 @@ function systemPositions() {
       Math.cos(latitude) * Math.sin(observerLongitude) * EARTH_RADIUS * 1.09,
     ),
   };
+}
+
+function moonTextureLightVector() {
+  const { moonPosition, observerPosition } = systemPositions();
+  const viewerDirection = observerPosition.clone().sub(moonPosition).normalize();
+  const sunDirection = sunlight.position.clone().normalize();
+  const facingLight = THREE.MathUtils.clamp(sunDirection.dot(viewerDirection), -1, 1);
+  const sideLight = Math.sqrt(Math.max(0, 1 - facingLight * facingLight));
+  const sideSign = sunDirection.cross(viewerDirection).y >= 0 ? 1 : -1;
+
+  return new THREE.Vector3(sideLight * sideSign, 0, facingLight).normalize();
 }
 
 function moonHorizontalPosition() {
@@ -323,7 +332,7 @@ function updateSky() {
 
   const orientation = parallacticOrientation(altitude, azimuth);
   moon.rotation.z = orientation;
-  drawMoonTexture(state.phase, orientation);
+  drawMoonTexture(moonTextureLightVector(), orientation);
   updateAltitudeArc(position);
 
   const latLabel = state.latitude > 0 ? `${state.latitude}° N` : state.latitude < 0 ? `${Math.abs(state.latitude)}° S` : "0°";
